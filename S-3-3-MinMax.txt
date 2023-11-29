@@ -1,0 +1,82 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <limits.h>
+#include <ctype.h>
+
+// Structure to store min, max, and comparisons
+struct Result {
+    int min;
+    int max;
+    int comparisons;
+};
+
+// Function to find min and max using divide and conquer
+struct Result findMinMax(int arr[], int low, int high) {
+    struct Result result, left, right;
+    int mid;
+
+    result.comparisons = 0;
+
+    // Base case: If the array has only one element
+    if (low == high) {
+        result.min = result.max = arr[low];
+        return result;
+    }
+
+    // If the array has two elements
+    if (high == low + 1) {
+        result.min = (arr[low] < arr[high]) ? arr[low] : arr[high];
+        result.max = (arr[low] > arr[high]) ? arr[low] : arr[high];
+        result.comparisons++;
+        return result;
+    }
+
+    // If there are more than two elements, divide the array and recursively find min and max
+    mid = (low + high) / 2;
+    left = findMinMax(arr, low, mid);
+    right = findMinMax(arr, mid + 1, high);
+
+    result.comparisons += left.comparisons + right.comparisons;
+
+    // Merge the results
+    result.min = (left.min < right.min) ? left.min : right.min;
+    result.max = (left.max > right.max) ? left.max : right.max;
+
+    return result;
+}
+
+int main() {
+    int n, i;
+    struct Result result;
+
+    // Input
+    printf("Enter the number of elements: ");
+    scanf("%d", &n);
+
+    if (n <= 0) {
+        printf("Invalid input\n");
+        return 1; // Exit with an error code
+    }
+
+    int arr[n];
+
+    printf("Enter the elements:\n");
+
+    for (i = 0; i < n; i++) {
+        // Check for non-numeric characters in input
+        if (scanf("%d", &arr[i]) != 1) {
+            printf("Illegal input\n");
+            return 1; // Exit with an error code
+        }
+    }
+
+    // Find min and max
+    result = findMinMax(arr, 0, n - 1);
+
+    // Output
+    printf("Min: %d\n", result.min);
+    printf("Max: %d\n", result.max);
+    printf("Number of comparisons: %d\n", result.comparisons);
+
+    return 0;
+}
